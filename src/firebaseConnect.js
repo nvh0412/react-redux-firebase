@@ -36,14 +36,14 @@ export const createFirebaseConnect = (storeKey = 'store') => (
     firebaseEvents = []
     firebase = null
     prevData = null
-    store = this.context[storeKey]
 
     componentWillMount() {
-      const { firebase, dispatch } = this.store
+      const store = this.context[storeKey]
+      const { firebase, dispatch } = store
 
       // Allow function to be passed
       const inputAsFunc = createCallable(dataOrFn)
-      this.prevData = inputAsFunc(this.props, this.store)
+      this.prevData = inputAsFunc(this.props, store)
 
       const { ref, helpers, storage, database, auth } = firebase
       this.firebase = { ref, storage, database, auth, ...helpers }
@@ -54,14 +54,17 @@ export const createFirebaseConnect = (storeKey = 'store') => (
     }
 
     componentWillUnmount() {
-      const { firebase, dispatch } = this.store
+      const store = this.context[storeKey]
+      const { firebase, dispatch } = store
       unWatchEvents(firebase, dispatch, this._firebaseEvents)
     }
 
     componentWillReceiveProps(np) {
-      const { firebase, dispatch } = this.store
+      const store = this.context[storeKey]
+
+      const { firebase, dispatch } = store
       const inputAsFunc = createCallable(dataOrFn)
-      const data = inputAsFunc(np, this.store)
+      const data = inputAsFunc(np, store)
 
       // Handle a data parameter having changed
       if (!isEqual(data, this.prevData)) {
